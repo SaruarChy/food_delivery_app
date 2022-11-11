@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:food_delivery_app/controllers/recommended_product_controller.dart';
+import 'package:food_delivery_app/routes/route_helper.dart';
 import 'package:food_delivery_app/utils/allDimension.dart';
+import 'package:food_delivery_app/utils/app_constants.dart';
 import 'package:food_delivery_app/utils/colors.dart';
 import 'package:food_delivery_app/widgets/app_icon.dart';
 import 'package:food_delivery_app/widgets/bigText.dart';
 import 'package:food_delivery_app/widgets/expandable_text_widtet.dart';
+import 'package:get/get.dart';
 
-class RecomendedFoodDetail extends StatefulWidget {
-  const RecomendedFoodDetail({super.key});
+class RecommendedFoodDetail extends StatelessWidget {
+  final int pageId;
+  const RecommendedFoodDetail({super.key, required this.pageId});
 
-  @override
-  State<RecomendedFoodDetail> createState() => _RecomendedFoodDetailState();
-}
-
-class _RecomendedFoodDetailState extends State<RecomendedFoodDetail> {
   @override
   Widget build(BuildContext context) {
+    var product =
+        Get.find<RecommendedProductController>().recommendedProductList[pageId];
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            automaticallyImplyLeading: false,
             toolbarHeight: 70,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AppIcon(icon: Icons.remove),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(RouteHelper.getInitial());
+                  },
+                  child: AppIcon(icon: Icons.clear),
+                ),
                 AppIcon(icon: Icons.shopping_cart_outlined),
               ],
             ),
@@ -35,8 +43,8 @@ class _RecomendedFoodDetailState extends State<RecomendedFoodDetail> {
               child: Container(
                 alignment: Alignment.center,
                 padding: EdgeInsets.only(
-                  top: 5,
-                  bottom: 10,
+                  top: Dimensions.height10 / 2,
+                  bottom: Dimensions.height10,
                 ),
                 width: double.maxFinite,
                 decoration: BoxDecoration(
@@ -46,15 +54,15 @@ class _RecomendedFoodDetailState extends State<RecomendedFoodDetail> {
                     topRight: Radius.circular(Dimensions.radius20),
                   ),
                 ),
-                child: BigText(text: "chines slide", size: 26),
+                child: BigText(text: product.name!, size: Dimensions.font26),
               ),
             ),
             pinned: true,
             backgroundColor: AppColors.yellowColor,
             expandedHeight: 300,
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                "assets/image/food2.jpg",
+              background: Image.network(
+                AppConstants.BASE_URL + AppConstants.UPLOAD_URL + product.img!,
                 fit: BoxFit.cover,
                 width: double.maxFinite,
               ),
@@ -67,8 +75,7 @@ class _RecomendedFoodDetailState extends State<RecomendedFoodDetail> {
                   padding: EdgeInsets.only(
                       left: Dimensions.width20, right: Dimensions.width20),
                   child: ExpandableTextWidget(
-                    text:
-                        "CFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarrary to popular belief, Lorem Ipsum is not simply randomContrary to popular belief, Lorem Ipsum is not simply randomContrary to popular belief, Lorem Ipsum is not simply randomContrary to popular belief, Lorem Ipsum is not simply randomContrary to popular belief, Lorem Ipsum is not simply randomContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, e Finibus Bonorum et Malorum",
+                    text: product.description!,
                   ),
                 ),
               ],
@@ -96,7 +103,7 @@ class _RecomendedFoodDetailState extends State<RecomendedFoodDetail> {
                   iconSize: Dimensions.iconSize24,
                 ),
                 BigText(
-                    text: "\12.88" + "X" + "0",
+                    text: "\$ ${product.price!} X 0",
                     color: AppColors.mainBlackColor,
                     size: Dimensions.font26),
                 AppIcon(

@@ -1,5 +1,9 @@
+import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
+import 'package:food_delivery_app/controllers/cart_controller.dart';
 import 'package:food_delivery_app/data/repository/popular_product_repo.dart';
 import 'package:food_delivery_app/models/products_model.dart';
+import 'package:food_delivery_app/utils/colors.dart';
 import 'package:get/get.dart';
 
 class PopularProductController extends GetxController {
@@ -9,6 +13,16 @@ class PopularProductController extends GetxController {
   List<dynamic> _popularProductList = [];
   List<dynamic> get popularProductList =>
       _popularProductList; // this is for get this list from every where ;
+  late CartController _cart;
+
+  bool _isLoaded = false;
+  bool get isLoaded => _isLoaded;
+
+  int _quantity = 0;
+  int get quantity => _quantity;
+  int _inCartItems = 0;
+  int get inCartItems => _inCartItems + _quantity;
+
   Future<void> getPopularProductList() async {
     Response response = await popularProductRepo.getPopularProductList();
 
@@ -17,6 +31,7 @@ class PopularProductController extends GetxController {
 
       // addAll needs list of objects|| product.fromjson making list of object
       _popularProductList.addAll(Product.fromJson(response.body).Products);
+      _isLoaded = true;
       print("got product");
       // print(_popularProductList);
       update(); // its like setState
@@ -24,5 +39,59 @@ class PopularProductController extends GetxController {
     } else {
       print("product not found ");
     }
+  }
+
+  void setQuantity(bool isIncrement) {
+    if (isIncrement) {
+      _quantity = checkQuantity(_quantity + 1);
+    } else {
+      _quantity = checkQuantity(_quantity - 1);
+    }
+    update();
+  }
+
+  checkQuantity(int quantity) {
+    if (_inCartItems + quantity < 0) {
+      Get.snackbar("Item count", "You can't reduce more !",
+          backgroundColor: AppColors.mainColor, colorText: Colors.white);
+      return 0;
+    } else if (_inCartItems + quantity > 20) {
+      Get.snackbar("Item count", "You can't add more !",
+          backgroundColor: AppColors.mainColor, colorText: Colors.white);
+      return 20;
+    } else {
+      return quantity;
+    }
+  }
+
+  void initProduct(ProductModel product, CartController cart) {
+    _quantity = 0;
+    _inCartItems = 0;
+    _cart = cart;
+    // if exist
+    var exist = false;
+    exist = _cart.existInCart(product);
+    if (exist) {
+      _inCartItems = _cart.getQuantity(product);
+    }
+    // get form storage _inCartItems  = 3
+    print("exist or not " + exist.toString());
+  }
+
+  void addItem(ProductModel product) {
+    // if (_quantity > 0) {
+    _cart.addItem(product, _quantity);
+    _quantity = 0;
+    _inCartItems = _cart.getQuantity(product);
+    // _cart.items.forEach((key, value) {
+    //   print("the is is " +
+    //       value.id.toString() +
+    //       " the quantity is : " +
+    //       value.quantity.toString());
+    // });
+    // } else {
+    //   Get.snackbar("Item count", "You should at least add an item in the cart!",
+    //       backgroundColor: AppColors.mainColor, colorText: Colors.white);
+    // }
   }
 }
