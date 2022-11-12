@@ -1,5 +1,6 @@
 // import 'dart:ffi';
 
+import 'package:food_delivery_app/pages/cart/cart_page.dart';
 import 'package:food_delivery_app/pages/food/popular_food_detail.dart';
 import 'package:food_delivery_app/pages/food/recommended_food_detail.dart.dart';
 import 'package:food_delivery_app/pages/home/main_food_page.dart';
@@ -9,11 +10,13 @@ class RouteHelper {
   static const String initial = '/';
   static const String popularFood = "/popular-food";
   static const String recomendedFood = "/recommended-food";
+  static const String cartPage = "/cart-page";
 
   static String getInitial() => '$initial';
   static String getPopularFood(int pageId) => '$popularFood?pageId=$pageId';
   static String getRecomendedFood(int pageId) =>
       '$recomendedFood?pageId=$pageId';
+  static String getCartpage() => '$cartPage';
 
   static List<GetPage> routes = [
     GetPage(name: initial, page: () => MainFoodPage()),
@@ -32,6 +35,13 @@ class RouteHelper {
         var pageId = Get.parameters['pageId'];
         return RecommendedFoodDetail(pageId: int.parse(pageId!));
       },
+    ),
+    GetPage(
+      name: cartPage,
+      page: () {
+        return CartPage();
+      },
+      transition: Transition.fadeIn,
     ),
   ];
 }
