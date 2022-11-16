@@ -10,6 +10,10 @@ class CartController extends GetxController {
   CartController({required this.cartRepo});
   Map<int, CartModel> _items = {};
   Map<int, CartModel> get items => _items;
+  List<CartModel> storageItems = [];
+  /* 
+  Only for sotage and sharedpreferences
+  */
 
   void addItem(ProductModel product, int quantity) {
     var totalQuantity = 0;
@@ -53,6 +57,7 @@ class CartController extends GetxController {
             backgroundColor: AppColors.mainColor, colorText: Colors.white);
       }
     }
+    cartRepo.addToCartList(getItems); // this getItems is a method in this class
     update();
   }
 
@@ -88,5 +93,50 @@ class CartController extends GetxController {
     return _items.entries.map((e) {
       return e.value;
     }).toList();
+  }
+
+  int get totalAmount {
+    var total = 0;
+    _items.forEach((key, value) {
+      total += value.quantity! * value.price!;
+    });
+    return total;
+  }
+
+  List<CartModel> getCartData() {
+    setCart = cartRepo.getCartList();
+    return storageItems;
+  }
+
+  set setCart(List<CartModel> items) {
+    storageItems = items;
+    print("Length of cart items " + storageItems.length.toString());
+    for (int i = 0; i < storageItems.length; i++) {
+      _items.putIfAbsent(storageItems[i].product!.id!, () => storageItems[i]);
+    }
+  }
+
+  void addToHistory() {
+    cartRepo.addToCartHistroyList();
+    clear();
+  }
+
+  void clear() {
+    _items = {};
+    update();
+  }
+
+  List<CartModel> getCartHistoryList() {
+    return cartRepo.getCartHistoryList();
+  }
+
+  set setItems(Map<int, CartModel> setItems) {
+    _items = {};
+    _items = setItems;
+  }
+
+  void addToCartList() {
+    cartRepo.addToCartList(getItems);
+    update();
   }
 }

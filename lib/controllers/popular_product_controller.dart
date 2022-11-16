@@ -89,7 +89,7 @@ class PopularProductController extends GetxController {
       _inCartItems = _cart.getQuantity(product);
     }
     // get form storage _inCartItems  = 3
-    print("exist or not " + exist.toString());
+    //print("exist or not " + exist.toString());
   }
 
   void addItem(ProductModel product) {
